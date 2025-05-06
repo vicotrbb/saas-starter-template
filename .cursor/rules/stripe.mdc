@@ -1,0 +1,101 @@
+---
+description: Include this rule whenever Stripe is mentioned, and verify that any sample code follows these conventions before returning the response or creating/modifying code.
+globs: 
+alwaysApply: false
+---
+### Stripe Integration Rule
+
+When generating code or guidance involving Stripe, it must adhere to the following:
+
+1. **Client Initialization**  
+- Always use the clients available on [client.ts](mdc:src/lib/stripe/client.ts)
+- Avoid creating new clients, use the singleton ones.
+
+2. **Type Safety & Strong Typing**  
+- Reference Stripe’s TypeScript definitions (`Stripe.PaymentIntent`, `Stripe.Customer`, etc.).  
+- Annotate return types for all API calls:  
+```ts
+async function createCustomer(email: string): Promise<Stripe.Customer> {
+  return await stripe.customers.create({ email });
+}
+```
+
+3. **Error Handling & Idempotency**  
+- Wrap all Stripe calls in `try/catch` and surface `error.message` and `error.type`.  
+- Use idempotency keys for operations that may be retried (e.g., payment creation):  
+  ```ts
+  const idempotencyKey = `pay_${orderId}`;
+  const payment = await stripe.paymentIntents.create({
+    amount,
+    currency: 'usd',
+    metadata: { orderId },
+  }, { idempotencyKey });
+  ```
+
+4. **Security & API Versioning**  
+- Pin to a fixed `apiVersion` in your initialization.  
+- Never expose secret keys on the client—use publishable key (`STRIPE_PUBLISHABLE_KEY`) only in frontend.
+
+5. **Webhooks & Signature Verification**  
+- Always verify webhook signatures using your `STRIPE_WEBHOOK_SECRET`:  
+  ```ts
+  import { buffer } from 'micro';
+
+  export const config = { api: { bodyParser: false } };
+
+  export default async function handler(req, res) {
+    const sig = req.headers['stripe-signature']!;
+    const body = (await buffer(req)).toString();
+    let event: Stripe.Event;
+
+    try {
+      event = stripe.webhooks.constructEvent(body, sig, process.env.STRIPE_WEBHOOK_SECRET!);
+    } catch (err) {
+      return res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+    // …handle event
+    res.status(200).json({ received: true });
+  }
+  ```
+
+6. **Checkout & Billing Portal Flows**  
+- For one-time payments, demonstrate `checkout.sessions.create()`.  
+- For subscriptions, configure customer, price, and billing cycle:  
+  ```ts
+  const session = await stripe.checkout.sessions.create({
+    mode: 'subscription',
+    customer: customerId,
+    line_items: [{ price: priceId, quantity: 1 }],
+    success_url: `${origin}/success?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${origin}/cancel`,
+  });
+  ```
+
+7. **Testing & Mocks**  
+- Advise using the Stripe CLI to fire test webhooks and validate local handlers.  
+- In unit tests, mock `stripe` methods (e.g., with Jest):  
+  ```ts
+  jest.mock('stripe', () => {
+    return jest.fn().mockImplementation(() => ({
+      customers: { create: jest.fn().mockResolvedValue({ id: 'cus_test' }) },
+      // …
+    }));
+  });
+  ```
+
+8. **Pagination & List APIs**  
+- Use cursor-style pagination (`starting_after` / `ending_before`) when listing resources:  
+  ```ts
+  const charges = await stripe.charges.list({
+    limit: 20,
+    starting_after: lastChargeId,
+  });
+  ```
+
+9. **Metadata & Idempotency in Business Logic**  
+- Store your own IDs (order IDs, user IDs) in Stripe’s `metadata` to simplify reconciliation.  
+- Always check `paymentIntent.status` (e.g., `succeeded`, `requires_action`) before fulfilling orders.
+
+10. **Compliance & Best Practices**  
+- Ensure PCI-compliance by using Stripe Elements or Checkout for card collection.  
+- Do not log sensitive payment data.  

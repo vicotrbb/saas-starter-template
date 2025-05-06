@@ -1,0 +1,81 @@
+---
+description: Include this rule whenever Supabase is mentioned, and validate that any sample code follows these conventions before returning the response or creating/modifying code.
+globs: 
+alwaysApply: false
+---
+### Supabase Integration Rule
+
+When generating code or guidance involving Supabase, it must adhere to the following:
+
+1. **Client Initialization**  
+- Always use the singleton clients available on the src/lib/supabase directory.
+- Use server admin client from [admin.ts](mdc:src/lib/supabase/admin.ts)
+- Use client auth client from [client-auth.ts](mdc:src/lib/supabase/client-auth.ts)
+- Use server auth client from [server-auth.ts](mdc:src/lib/supabase/server-auth.ts)
+
+2. **Type Safety & Schema Awareness**  
+- Reference your database schema by using [database.types.ts](mdc:src/types/database.types.ts)
+- Always annotate return types:  
+  ```ts
+  type User = Database['public']['Tables']['users']['Row'];
+
+  async function getUser(id: string): Promise<User | null> {
+    const { data, error } = await dbClient
+      .from<'users', User>('users')
+      .select('*')
+      .eq('id', id)
+      .single();
+    // …
+  }
+  ```
+
+3. **Migrations**
+- Migration are always created in sql.
+- Migrates are located in the /migrations directory.
+
+4. **Error Handling & Validation**  
+- Check `error` on every request and throw or return a descriptive error.  
+- Validate inputs before querying to prevent injection or invalid requests.
+- You can ignore checking error when the query in case is not critical
+
+5. **Row-Level Security & Auth**  
+- Enable RLS and writing policies for each table.
+- Admins must be able to query/modify any table.
+- If the application support customer api keys, it must allow only access to rows owned by the client owner of the api key.
+
+6. **Edge & Serverless Functions**  
+- For Next.js API routes or Vercel Edge Functions, use the Service Role key securely on the server.  
+- Avoid exposing Service Role key in client-side bundles.
+
+7. **Pagination & Cursors**  
+- Use `.range()` or `.limit()` + `.order()` for paginated queries.  
+- Encourage cursor-based pagination for large datasets:  
+  ```ts
+  const { data, error } = await dbClient
+    .from('posts')
+    .select('*')
+    .gt('id', lastFetchedId)
+    .order('id', { ascending: true })
+    .limit(20);
+  ```
+
+8. **Caching & Performance**  
+- Suggest using Supabase’s built-in `cache: 'force-cache'` or external caching layers (e.g., Redis) for read-heavy endpoints.  
+- Warn about over-fetching: always select only needed columns.
+
+9. **Realtime & Subscriptions**  
+- When relevant, demonstrate how to subscribe to changes:  
+  ```ts
+  dbClient
+    .from('messages')
+    .on('INSERT', payload => console.log('New message:', payload.new))
+    .subscribe();
+  ```
+
+10. **Testing & Mocks**  
+- Advise mocking `dbClient` in unit tests (e.g., with Jest spies/stubs).  
+- Provide examples using `jest.mock('@supabase/supabase-js')` to simulate responses.
+
+11. **Security Best Practices**  
+- Never log sensitive data (API keys, user tokens).  
+- Recommend rotating keys and using environment-specific credentials.

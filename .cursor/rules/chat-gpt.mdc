@@ -1,0 +1,87 @@
+---
+description: Incldue this ru;e whenever ChatGPT API usage is mentioned, and verify that any sample code follows these conventions before returning the response or creating/modifying any code.
+globs: 
+alwaysApply: false
+---
+### OpenAI ChatGPT Integration Rule
+
+When generating code or guidance involving ChatGPT, it must adhere to the following:
+
+1. **Client Initialization**  
+- Use the official `openai` SDK (`npm install openai`).  
+- Load `OPENAI_API_KEY` from environment variables—never hard-code.  
+- Always use the singleton client from [chatgpt.ts](mdc:src/lib/openai/chatgpt.ts)
+- Avoid creating new clients, use the singleton one.
+
+2. **Model Selection & Parameters**  
+- Explicitly specify the model (`gpt-4o`, `gpt-4`, `gpt-3.5-turbo`, etc.).  
+- Always configure `temperature`, `max_tokens`, `top_p`, and other relevant params for deterministic behavior as needed.  
+  ```ts
+  const response = await openai.chat.completions.create({
+    model: "gpt-4o",
+    messages: [...],
+    temperature: 0.7,
+    max_tokens: 1024,
+  });
+  ```
+- Use parameters to favor the result of the chatgpt call.
+
+3. **Message Roles & Prompt Structure**  
+- Use the correct roles: `system`, `user`, `assistant`.  
+- Provide clear system instructions at the start.  
+  ```js
+  messages: [
+    { role: "system", content: "You are a helpful assistant specializing in X." },
+    { role: "user",   content: "How do I do Y?" }
+  ]
+  ```
+
+4. **Error Handling & Retries**  
+- Wrap API calls in `try/catch` and inspect `error.message`, `error.code`.  
+- Implement exponential backoff for retryable errors (HTTP 429, 5xx).  
+  ```ts
+  async function safeChatComplete(params) {
+    for (let i = 0; i < 3; i++) {
+      try {
+        return await openai.chat.completions.create(params);
+      } catch (err) {
+        if (shouldRetry(err)) await wait(backoff(i));
+        else throw err;
+      }
+    }
+  }
+  ```
+
+5. **Streaming Responses**  
+- When using streaming, consume `response.body` as an async iterator.  
+- Provide examples for both streaming and non-streaming usage.
+
+6. **Security & Key Exposure**  
+- Never expose `OPENAI_API_KEY` in frontend bundles.  
+- Use server-only functions (Next.js API routes, edge functions) for API calls.  
+- Rotate keys periodically and scope proxy permissions if using Organization-level tokens.
+
+7. **Rate Limits & Cost Awareness**  
+- Respect documented rate limits; throttle requests if needed.  
+- Monitor token usage to control costs; include warnings for high-token responses.
+
+8. **Prompt Injection Prevention**  
+- Sanitize or validate user-provided content before including it in prompts.  
+- Use system messages to lock down behavior and prevent context leakage.
+
+9. **Type Safety & Response Typing**  
+- Use TypeScript interfaces for request and response shapes (`ChatCompletionCreateParams`, `ChatCompletion`).  
+- Annotate return types to enforce correct usage.
+
+10. **Testing & Mocks**  
+- Mock the OpenAI client in unit tests (e.g., with Jest):  
+  ```ts
+  jest.mock("openai", () => ({
+    ChatCompletion: { create: jest.fn().mockResolvedValue({ choices: [{ message: { content: "ok" }}] }) }
+  }));
+  ```  
+- For integration tests, consider using the OpenAI Playground or a local stub.
+
+11. **Compliance & Privacy**  
+- Do not log PII or sensitive user data included in prompts or completions.  
+- Follow OpenAI’s data usage policy; disable data logging if required (`openai.dataFiltering` options).
