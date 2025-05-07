@@ -26,11 +26,18 @@ create table users (
     id uuid primary key references auth.users(id) on delete cascade,
     first_name text not null,
     last_name text not null,
+    email text not null,
+    phone_number text,
     role user_role not null,
     organization_id uuid not null references organizations(id),
     created_at timestamp with time zone default timezone('utc', now()),
     updated_at timestamp with time zone default timezone('utc', now()),
-    deleted_at timestamp with time zone
+    deleted_at timestamp with time zone,
+    
+    -- Ensure email matches auth.users email
+    constraint users_email_check check (
+        email = (select email from auth.users where id = users.id)
+    )
 );
 
 -- Rate limits table

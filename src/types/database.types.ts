@@ -31,6 +31,8 @@ export interface Database {
           id: string;
           first_name: string;
           last_name: string;
+          email: string;
+          phone_number: string | null;
           role: 'user' | 'org-admin' | 'system-admin';
           organization_id: string;
           created_at: string;
@@ -41,6 +43,8 @@ export interface Database {
           id: string;
           first_name: string;
           last_name: string;
+          email: string;
+          phone_number?: string | null;
           role: 'user' | 'org-admin' | 'system-admin';
           organization_id: string;
           created_at?: string;
@@ -51,6 +55,8 @@ export interface Database {
           id?: string;
           first_name?: string;
           last_name?: string;
+          email?: string;
+          phone_number?: string | null;
           role?: 'user' | 'org-admin' | 'system-admin';
           organization_id?: string;
           created_at?: string;
