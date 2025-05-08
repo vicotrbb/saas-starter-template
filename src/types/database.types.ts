@@ -102,6 +102,115 @@ export interface Database {
           last_updated_at?: string;
         };
       };
+      prices: {
+        Row: {
+          id: string;
+          stripe_price_id: string;
+          product_id: string;
+          currency: string;
+          unit_amount: number;
+          recurring_interval: 'month' | 'year' | null;
+          active: boolean;
+          metadata: Json | null;
+          created_at: string;
+          updated_at: string;
+          deleted_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          stripe_price_id: string;
+          product_id: string;
+          currency: string;
+          unit_amount: number;
+          recurring_interval?: 'month' | 'year' | null;
+          active?: boolean;
+          metadata?: Json | null;
+          created_at?: string;
+          updated_at?: string;
+          deleted_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          stripe_price_id?: string;
+          product_id?: string;
+          currency?: string;
+          unit_amount?: number;
+          recurring_interval?: 'month' | 'year' | null;
+          active?: boolean;
+          metadata?: Json | null;
+          created_at?: string;
+          updated_at?: string;
+          deleted_at?: string | null;
+        };
+      };
+      payments: {
+        Row: {
+          id: string;
+          stripe_payment_intent_id: string;
+          stripe_customer_id: string;
+          amount: number;
+          currency: string;
+          status:
+            | 'succeeded'
+            | 'processing'
+            | 'requires_payment_method'
+            | 'requires_confirmation'
+            | 'requires_action'
+            | 'requires_capture'
+            | 'canceled'
+            | 'failed';
+          payment_type: 'subscription' | 'one_time';
+          subscription_id: string | null;
+          price_id: string | null;
+          metadata: Json | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          stripe_payment_intent_id: string;
+          stripe_customer_id: string;
+          amount: number;
+          currency: string;
+          status:
+            | 'succeeded'
+            | 'processing'
+            | 'requires_payment_method'
+            | 'requires_confirmation'
+            | 'requires_action'
+            | 'requires_capture'
+            | 'canceled'
+            | 'failed';
+          payment_type: 'subscription' | 'one_time';
+          subscription_id?: string | null;
+          price_id?: string | null;
+          metadata?: Json | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          stripe_payment_intent_id?: string;
+          stripe_customer_id?: string;
+          amount?: number;
+          currency?: string;
+          status?:
+            | 'succeeded'
+            | 'processing'
+            | 'requires_payment_method'
+            | 'requires_confirmation'
+            | 'requires_action'
+            | 'requires_capture'
+            | 'canceled'
+            | 'failed';
+          payment_type?: 'subscription' | 'one_time';
+          subscription_id?: string | null;
+          price_id?: string | null;
+          metadata?: Json | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
     };
     Views: {
       [_ in never]: never;
@@ -125,6 +234,25 @@ export interface Database {
     };
     Enums: {
       user_role: 'user' | 'org-admin' | 'system-admin';
+      subscription_status:
+        | 'trialing'
+        | 'active'
+        | 'canceled'
+        | 'incomplete'
+        | 'incomplete_expired'
+        | 'past_due'
+        | 'unpaid';
+      payment_status:
+        | 'succeeded'
+        | 'processing'
+        | 'requires_payment_method'
+        | 'requires_confirmation'
+        | 'requires_action'
+        | 'requires_capture'
+        | 'canceled'
+        | 'failed';
+      recurring_interval: 'month' | 'year';
+      payment_type: 'subscription' | 'one_time';
       rate_limit_type: 'api' | 'auth';
     };
     CompositeTypes: {
