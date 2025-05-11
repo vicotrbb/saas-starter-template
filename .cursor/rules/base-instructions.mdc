@@ -70,6 +70,11 @@ You are an expert senior software engineer specializing in modern web developmen
 - Use `Suspense` for async operations  
 - Optimize for performance & Web Vitals
 
+### API architecture
+
+- Always returnt the API response using apiResponse from [responses.ts](mdc:src/lib/api/responses.ts)
+- API errors must be sent to the client with apiError from [responses.ts](mdc:src/lib/api/responses.ts)
+
 ### State Management
 
 - Use `useActionState` over deprecated hooks  

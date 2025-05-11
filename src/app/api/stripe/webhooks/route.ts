@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import logger from '@/lib/api/logger';
 import Stripe from 'stripe';
 import { stripe } from '@/lib/stripe/client';
+import { apiError, apiResponse } from '@/lib/api/responses';
+import { handleStripeWebhook } from '@/lib/features/stripe';
 
 /**
  * Stripe webhook handler
@@ -28,25 +30,25 @@ export async function POST(req: NextRequest) {
       if (!signature) {
         throw new Error('Missing Stripe webhook secret.');
       }
-  
+
       event = stripe.webhooks.constructEvent(payload, signature, signature);
       logger.info('Stripe webhook event:', { event });
     } catch (err: unknown) {
       if (err instanceof Error) {
         logger.error(`Webhook signature verification failed: ${err.message}`);
-        return NextResponse.json({ error: err.message }, { status: 400 });
+        return apiError('BAD_REQUEST', err.message);
       } else {
         logger.error(`Webhook signature verification failed: ${err}`);
-        return NextResponse.json({ error: `Webhook Signature Verification Error: ${err}` }, { status: 500 });
+        return apiError('INTERNAL_SERVER_ERROR', `Webhook Signature Verification Error: ${err}`);
       }
     }
 
-    // Handle the event here
+    await handleStripeWebhook(event);
 
     logger.info('Stripe webhook processed successfully');
-    return NextResponse.json({ received: true });
+    return apiResponse({ received: true, message: 'Stripe webhook processed successfully' });
   } catch (error) {
     logger.error('Error handling Stripe webhook:', error as Error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return apiError('INTERNAL_SERVER_ERROR', 'Internal server error');
   }
 }

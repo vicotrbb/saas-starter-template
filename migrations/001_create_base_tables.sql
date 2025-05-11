@@ -16,6 +16,7 @@ create type rate_limit_type as enum (
 create type subscription_status as enum (
     'trialing',
     'active',
+    'paused',
     'canceled',
     'incomplete',
     'incomplete_expired',
@@ -148,8 +149,6 @@ create table subscriptions (
     stripe_customer_id uuid not null references stripe_customers(id),
     price_id uuid not null references prices(id),
     status subscription_status not null,
-    current_period_start timestamp with time zone not null,
-    current_period_end timestamp with time zone not null,
     cancel_at_period_end boolean not null default false,
     created_at timestamp with time zone default timezone('utc', now()),
     updated_at timestamp with time zone default timezone('utc', now()),

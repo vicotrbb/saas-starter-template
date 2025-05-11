@@ -7,11 +7,16 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createSupabaseClient } from '@/lib/supabase/client-auth';
 import { debounce } from '@/lib/utils';
 import { apiClient } from '@/lib/api/client';
+import {
+  AuthContext as IAuthContext,
+  UserContext as IUserContext,
+  OrganizationContext,
+} from '@/types/context.types';
+import { UserRole } from '@/types/api.types';
 
-// Define the context for the user data - Implement an interface for the user data
-const UserContext = createContext<unknown | undefined>(undefined);
+const AuthContext = createContext<IAuthContext | undefined>(undefined);
 
-export function SupabaseAuthProvider({ children }: { children: React.ReactNode }) {
+export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -20,16 +25,29 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
   const supabase = createSupabaseClient();
 
   // Adds user data to the context
-  const { data: userData, isLoading: isUserDataLoading } = useQuery({
-    queryKey: ['userData', user?.id],
+  const {
+    data: { userData, organizationData } = {
+      userData: null,
+      organizationData: null,
+    },
+    isLoading: isUserDataLoading,
+  } = useQuery({
+    queryKey: ['authContext', user?.id],
     queryFn: async () => {
-      if (!user) return null;
+      if (!user) {
+        return { userData: null, organizationData: null };
+      }
 
       try {
-        return {};
+        const [userData, organizationData] = await Promise.all([
+          apiClient.get<IUserContext>('users'),
+          apiClient.get<OrganizationContext>('organizations'),
+        ]);
+
+        return { userData, organizationData };
       } catch (error) {
         console.error('Error fetching user data:', error);
-        return {};
+        return { userData: null, organizationData: null };
       }
     },
     enabled: !!user,
@@ -39,11 +57,12 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
   });
 
   const debouncedRefresh = useMemo(
-    () => debounce(() => queryClient.invalidateQueries({ queryKey: ['userData', user?.id] }), 300),
+    () =>
+      debounce(() => queryClient.invalidateQueries({ queryKey: ['authContext', user?.id] }), 300),
     [queryClient, user]
   );
 
-  const { mutateAsync: refreshUserData } = useMutation({
+  const { mutateAsync: refreshAuthContext } = useMutation({
     mutationFn: async () => {
       if (!user) return;
       debouncedRefresh();
@@ -134,38 +153,53 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
     [supabase.auth]
   );
 
+  const hasFeature = useCallback((feature: string) => {
+    return !!feature;
+  }, []);
+
+  const isSubscribedAndActive = useCallback(() => {
+    return true;
+  }, []);
+
   const value = useMemo(
     () => ({
       user,
       userData,
+      organizationData,
+      userRole: userData?.role as UserRole,
       session,
       isLoading,
       signIn,
       signUp,
       signOut,
       resetPassword,
-      refreshUserData,
+      refreshAuthContext,
       isUserDataLoading,
+      hasFeature,
+      isSubscribedAndActive,
     }),
     [
       user,
       userData,
+      organizationData,
       session,
       isLoading,
-      refreshUserData,
+      refreshAuthContext,
       isUserDataLoading,
       signIn,
       signOut,
       resetPassword,
       signUp,
+      hasFeature,
+      isSubscribedAndActive,
     ]
   );
 
-  return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {
-  const context = useContext(UserContext);
+  const context = useContext(AuthContext);
 
   if (context === undefined) {
     throw new Error('useAuth must be used within a SupabaseAuthProvider');

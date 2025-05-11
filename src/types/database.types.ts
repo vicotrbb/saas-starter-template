@@ -25,6 +25,7 @@ export interface Database {
           updated_at?: string;
           deleted_at?: string | null;
         };
+        Relationships: [];
       };
       users: {
         Row: {
@@ -63,6 +64,14 @@ export interface Database {
           updated_at?: string;
           deleted_at?: string | null;
         };
+        Relationships: [
+          {
+            foreignKeyName: 'users_organization_id_fkey';
+            columns: ['organization_id'];
+            referencedRelation: 'organizations';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       rate_limits: {
         Row: {
@@ -101,6 +110,168 @@ export interface Database {
           created_at?: string;
           last_updated_at?: string;
         };
+        Relationships: [
+          {
+            foreignKeyName: 'rate_limits_user_id_fkey';
+            columns: ['user_id'];
+            referencedRelation: 'users';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'rate_limits_organization_id_fkey';
+            columns: ['organization_id'];
+            referencedRelation: 'organizations';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      products: {
+        Row: {
+          id: string;
+          stripe_product_id: string;
+          name: string;
+          description: string | null;
+          active: boolean;
+          metadata: Json | null;
+          created_at: string;
+          updated_at: string;
+          deleted_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          stripe_product_id: string;
+          name: string;
+          description?: string | null;
+          active?: boolean;
+          metadata?: Json | null;
+          created_at?: string;
+          updated_at?: string;
+          deleted_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          stripe_product_id?: string;
+          name?: string;
+          description?: string | null;
+          active?: boolean;
+          metadata?: Json | null;
+          created_at?: string;
+          updated_at?: string;
+          deleted_at?: string | null;
+        };
+        Relationships: [];
+      };
+      stripe_customers: {
+        Row: {
+          id: string;
+          stripe_customer_id: string;
+          user_id: string | null;
+          organization_id: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          stripe_customer_id: string;
+          user_id?: string | null;
+          organization_id?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          stripe_customer_id?: string;
+          user_id?: string | null;
+          organization_id?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'stripe_customers_user_id_fkey';
+            columns: ['user_id'];
+            referencedRelation: 'users';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'stripe_customers_organization_id_fkey';
+            columns: ['organization_id'];
+            referencedRelation: 'organizations';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      subscriptions: {
+        Row: {
+          id: string;
+          stripe_subscription_id: string;
+          stripe_customer_id: string;
+          price_id: string;
+          status:
+            | 'trialing'
+            | 'active'
+            | 'canceled'
+            | 'incomplete'
+            | 'incomplete_expired'
+            | 'past_due'
+            | 'unpaid';
+          cancel_at_period_end: boolean;
+          created_at: string;
+          updated_at: string;
+          deleted_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          stripe_subscription_id: string;
+          stripe_customer_id: string;
+          price_id: string;
+          status:
+            | 'trialing'
+            | 'active'
+            | 'paused'
+            | 'canceled'
+            | 'incomplete'
+            | 'incomplete_expired'
+            | 'past_due'
+            | 'unpaid';
+          cancel_at_period_end?: boolean;
+          created_at?: string;
+          updated_at?: string;
+          deleted_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          stripe_subscription_id?: string;
+          stripe_customer_id?: string;
+          price_id?: string;
+          status?:
+            | 'trialing'
+            | 'active'
+            | 'paused'
+            | 'canceled'
+            | 'incomplete'
+            | 'incomplete_expired'
+            | 'past_due'
+            | 'unpaid';
+          cancel_at_period_end?: boolean;
+          created_at?: string;
+          updated_at?: string;
+          deleted_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'subscriptions_stripe_customer_id_fkey';
+            columns: ['stripe_customer_id'];
+            referencedRelation: 'stripe_customers';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'subscriptions_price_id_fkey';
+            columns: ['price_id'];
+            referencedRelation: 'prices';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       prices: {
         Row: {
@@ -142,6 +313,14 @@ export interface Database {
           updated_at?: string;
           deleted_at?: string | null;
         };
+        Relationships: [
+          {
+            foreignKeyName: 'prices_product_id_fkey';
+            columns: ['product_id'];
+            referencedRelation: 'products';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       payments: {
         Row: {
@@ -210,6 +389,26 @@ export interface Database {
           created_at?: string;
           updated_at?: string;
         };
+        Relationships: [
+          {
+            foreignKeyName: 'payments_stripe_customer_id_fkey';
+            columns: ['stripe_customer_id'];
+            referencedRelation: 'stripe_customers';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'payments_subscription_id_fkey';
+            columns: ['subscription_id'];
+            referencedRelation: 'subscriptions';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'payments_price_id_fkey';
+            columns: ['price_id'];
+            referencedRelation: 'prices';
+            referencedColumns: ['id'];
+          },
+        ];
       };
     };
     Views: {
@@ -237,6 +436,7 @@ export interface Database {
       subscription_status:
         | 'trialing'
         | 'active'
+        | 'paused'
         | 'canceled'
         | 'incomplete'
         | 'incomplete_expired'

@@ -1,16 +1,14 @@
 import logger from '@/lib/api/logger';
+import { apiError } from '@/lib/api/responses';
+import { apiResponse } from '@/lib/api/responses';
 import { supabaseAdmin } from '@/lib/supabase/admin';
-import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
   try {
     const { name, email, password } = await req.json();
 
     if (!name || !email || !password) {
-      return NextResponse.json(
-        { error: 'Name, email, and password are required' },
-        { status: 400 }
-      );
+      return apiError('BAD_REQUEST', 'Name, email, and password are required');
     }
 
     const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
@@ -24,11 +22,11 @@ export async function POST(req: Request) {
 
     if (authError) {
       logger.error('Error creating user:', authError);
-      return NextResponse.json({ error: 'Error creating user account' }, { status: 500 });
+      return apiError('INTERNAL_SERVER_ERROR', 'Error creating user account');
     }
 
     if (!authData.user) {
-      return NextResponse.json({ error: 'Error creating user account' }, { status: 500 });
+      return apiError('INTERNAL_SERVER_ERROR', 'Error creating user account');
     }
 
     try {
@@ -49,9 +47,9 @@ export async function POST(req: Request) {
       logger.error('Failed to send verification email:', emailError as Error);
     }
 
-    return NextResponse.json({ message: 'User registered successfully' }, { status: 201 });
+    return apiResponse('User registered successfully');
   } catch (error) {
     logger.error('Registration error:', error as Error);
-    return NextResponse.json({ error: 'An unexpected error occurred' }, { status: 500 });
+    return apiError('INTERNAL_SERVER_ERROR', 'An unexpected error occurred');
   }
 }

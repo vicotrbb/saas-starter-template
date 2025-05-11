@@ -1,4 +1,5 @@
 import logger from '@/lib/api/logger';
+import { apiError, apiResponse } from '@/lib/api/responses';
 import { supabaseAdmin } from '@/lib/supabase/admin';
 import { getServerUser } from '@/lib/supabase/server-auth';
 import { NextResponse } from 'next/server';
@@ -25,7 +26,7 @@ export async function POST(req: Request) {
 
       if (updateError) {
         logger.error('Error updating email:', updateError);
-        return NextResponse.json({ error: 'Failed to update email' }, { status: 500 });
+        return apiError('INTERNAL_SERVER_ERROR', 'Failed to update email');
       }
     }
 
@@ -41,12 +42,12 @@ export async function POST(req: Request) {
 
     if (error) {
       logger.error('Error sending verification email:', error);
-      return NextResponse.json({ error: 'Failed to send verification email' }, { status: 500 });
+      return apiError('INTERNAL_SERVER_ERROR', 'Failed to send verification email');
     }
 
-    return NextResponse.json({ success: true });
+    return apiResponse('Verification email sent successfully');
   } catch (error) {
     logger.error('Error in verification email route:', error as Error);
-    return NextResponse.json({ error: 'An unexpected error occurred' }, { status: 500 });
+    return apiError('INTERNAL_SERVER_ERROR', 'An unexpected error occurred');
   }
 }
