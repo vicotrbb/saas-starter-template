@@ -64,7 +64,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const { mutateAsync: refreshAuthContext } = useMutation({
     mutationFn: async () => {
-      if (!user) return;
+      if (!user) {
+        return;
+      }
+
       debouncedRefresh();
     },
   });

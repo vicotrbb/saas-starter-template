@@ -1,5 +1,5 @@
 import { generateMetadata } from '@/app/metadata';
-import Register from '@/components/Auth/Register';
+import Register from '@/components/auth/Register';
 
 export const metadata = generateMetadata({
   title: 'Create Your Account',

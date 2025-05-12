@@ -1,8 +1,9 @@
 import JsonLd from '@/components/seo/JsonLd';
+import { DeleteMeHomepage } from '@/delete-me/delete-me';
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen flex-col">
+    <>
       <JsonLd type="WebSite" />
       <JsonLd
         type="Organization"
@@ -12,7 +13,7 @@ export default function Home() {
           email: 'support@saas-starter-template.com',
         }}
       />
-      <h1>Hello World</h1>
-    </div>
+      <DeleteMeHomepage />
+    </>
   );
 }

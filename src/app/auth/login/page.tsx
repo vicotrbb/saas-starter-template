@@ -3,7 +3,7 @@
 import { Suspense, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
-import LoginLoading from '@/components/Loading/LoadingFallback';
+import LoginLoading from '@/components/loading/LoadingFallback';
 
 function LoginContent() {
   const searchParams = useSearchParams();
