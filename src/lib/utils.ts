@@ -1,43 +1,42 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
 interface DebouncedFunction<T extends (..._args: unknown[]) => unknown> {
-  (..._args: Parameters<T>): void
-  cancel: () => void
+  (..._args: Parameters<T>): void;
+  cancel: () => void;
 }
 
 export function debounce<T extends (..._args: unknown[]) => unknown>(
   func: T,
   wait: number
 ): DebouncedFunction<T> {
-  let timeout: ReturnType<typeof setTimeout> | null = null
+  let timeout: ReturnType<typeof setTimeout> | null = null;
 
   const debounced = function (...args: Parameters<T>) {
     const later = () => {
-      timeout = null
-      func(...args)
-    }
+      timeout = null;
+      func(...args);
+    };
 
     if (timeout !== null) {
-      clearTimeout(timeout)
+      clearTimeout(timeout);
     }
-    timeout = setTimeout(later, wait)
-  } as DebouncedFunction<T>
+    timeout = setTimeout(later, wait);
+  } as DebouncedFunction<T>;
 
   debounced.cancel = function () {
     if (timeout !== null) {
-      clearTimeout(timeout)
-      timeout = null
+      clearTimeout(timeout);
+      timeout = null;
     }
-  }
+  };
 
-  return debounced
+  return debounced;
 }
-
 
 /**
  * Constructs a fully qualified URL by combining the base site URL with a path

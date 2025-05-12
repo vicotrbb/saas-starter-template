@@ -41,16 +41,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         const [userData, organizationData] = await Promise.all([
           apiClient.get<IUserContext>('users'),
-          apiClient.get<OrganizationContext>('organizations'),
+          apiClient.get<OrganizationContext>('org'),
         ]);
 
         return { userData, organizationData };
-      } catch (error) {
-        console.error('Error fetching user data:', error);
+      } catch {
         return { userData: null, organizationData: null };
       }
     },
-    enabled: !!user,
+    enabled: !!user && !!user.id,
     staleTime: 5 * 60 * 1000,
     retry: 3,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
@@ -78,7 +77,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         data: { user },
       } = await supabase.auth.getUser();
 
-      setUser(user || null);
+      setUser(user ?? null);
       setIsLoading(false);
 
       const {

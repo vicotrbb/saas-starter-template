@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import logger from './logger';
 
 export type ApiErrorType =
   | 'UNAUTHORIZED'
@@ -240,7 +241,7 @@ export function apiError(
     type === 'OPENAI_ERROR' ||
     type === 'API_ERROR'
   ) {
-    console.error(`API Error [${errorTraceId}]:`, { type, message, details });
+    logger.error(`API Error [${errorTraceId}]:`, { type, message, details });
   }
 
   // Create the error response with enhanced details

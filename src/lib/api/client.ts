@@ -123,7 +123,6 @@ const handleApiError = <T>(error: unknown): Promise<T> => {
 
   if (error instanceof TypeError && error.message === 'Failed to fetch') {
     errorMessage = 'Network error. Please check your internet connection and try again.';
-    toast.error(errorMessage);
     return Promise.reject(new Error(errorMessage));
   }
 
@@ -196,7 +195,6 @@ export const apiClient = {
             return Promise.reject(errorData);
           }
 
-          toast.error(errorData.error?.message || 'Request failed');
           return Promise.reject(errorData);
         }
 
@@ -205,7 +203,6 @@ export const apiClient = {
         if (data && typeof data === 'object' && 'success' in data) {
           if (!data.success) {
             const errorData = data as ApiErrorResponse;
-            toast.error(errorData.error?.message || 'Request failed');
             return Promise.reject(errorData);
           }
 
@@ -273,7 +270,7 @@ export const apiClient = {
           if (response.status === 429) {
             const resetIn =
               errorData.error?.resetIn || parseInt(response.headers.get('Retry-After') || '60', 10);
-            
+
             if (errorData.error) {
               errorData.error.resetIn = resetIn;
             }
