@@ -4,6 +4,7 @@ import { Suspense, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 import LoginLoading from '@/components/loading/LoadingFallback';
+import Login from '@/components/auth/Login';
 
 function LoginContent() {
   const searchParams = useSearchParams();
@@ -21,7 +22,11 @@ function LoginContent() {
     }
   }, [searchParams]);
 
-  return <div className="flex min-h-screen items-center justify-center">{/* <Login /> */}</div>;
+  return (
+    <div className="flex min-h-screen items-center justify-center">
+      <Login />
+    </div>
+  );
 }
 
 export default function LoginPage() {

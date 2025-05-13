@@ -6,6 +6,7 @@ import { ReactQueryProvider } from '@/components/providers/query-provider';
 import { AuthProvider } from '@/components/providers/auth-provider';
 import { Toaster } from 'sonner';
 import { ThemeProvider } from '@/components/providers/theme-provider';
+import { Header } from '@/components/layout/header';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -48,6 +49,7 @@ export default function RootLayout({
           <ThemeProvider>
             <AuthProvider>
               <Analytics />
+              <Header />
               {children}
               <Toaster />
             </AuthProvider>
