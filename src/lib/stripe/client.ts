@@ -29,17 +29,18 @@ export const getStripeClientSideClient = () => {
  * based on the environment. In production, it will use STRIPE_SECRET_KEY_LIVE
  * and fall back to STRIPE_SECRET_KEY in development environments.
  */
-export const stripe = new Stripe(
-  process.env.STRIPE_SECRET_KEY_LIVE ?? process.env.STRIPE_SECRET_KEY ?? '',
-  {
-    // https://github.com/stripe/stripe-node#configuration
-    apiVersion: '2025-04-30.basil', // Use a specific API version for stability
-    // Register this as an official Stripe plugin.
-    // https://stripe.com/docs/building-plugins#setappinfo
-    appInfo: {
-      name: packageJson.name,
-      version: packageJson.version,
-      url: packageJson.homepage,
-    },
-  }
-);
+export const stripe = (
+  !process.env.STRIPE_SECRET_KEY && !process.env.STRIPE_SECRET_KEY_LIVE
+    ? new Stripe(process.env.STRIPE_SECRET_KEY_LIVE ?? process.env.STRIPE_SECRET_KEY ?? '', {
+        // https://github.com/stripe/stripe-node#configuration
+        apiVersion: '2025-04-30.basil', // Use a specific API version for stability
+        // Register this as an official Stripe plugin.
+        // https://stripe.com/docs/building-plugins#setappinfo
+        appInfo: {
+          name: packageJson.name,
+          version: packageJson.version,
+          url: packageJson.homepage,
+        },
+      })
+    : null
+)!;
