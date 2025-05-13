@@ -9,9 +9,13 @@ import { NextRequest } from 'next/server';
  *
  * This endpoint returns a list of available prices for a product.
  */
-export async function GET(req: NextRequest, { params }: { params: { productId: string } }) {
+export async function GET(request: NextRequest) {
   try {
-    const { productId } = await params;
+    const productId = request.nextUrl.searchParams.get('productId');
+
+    if (!productId) {
+      return apiError('BAD_REQUEST', 'Product ID is required');
+    }
 
     const { data: prices, error: pricesError } = await supabaseAdmin
       .from('prices')

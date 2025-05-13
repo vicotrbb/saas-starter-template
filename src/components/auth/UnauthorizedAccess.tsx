@@ -11,8 +11,9 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Lock } from 'lucide-react';
+import { Suspense } from 'react';
 
-export default function UnauthorizedAccess() {
+function UnauthorizedAccessContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const currentPath = searchParams.get('redirectTo') || '/';
@@ -50,5 +51,15 @@ export default function UnauthorizedAccess() {
         </CardFooter>
       </Card>
     </div>
+  );
+}
+
+export default function UnauthorizedAccess() {
+  return (
+    <Suspense
+      fallback={<div className="flex min-h-screen items-center justify-center">Loading...</div>}
+    >
+      <UnauthorizedAccessContent />
+    </Suspense>
   );
 }
