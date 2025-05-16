@@ -16,6 +16,7 @@ import { Menu, LogOut, User as UserIcon, Settings, X } from 'lucide-react';
 import { useAuth } from '../providers/auth-provider';
 import { Skeleton } from '@/components/ui/skeleton';
 import React from 'react';
+import { useSidebar } from '@/contexts/sidebar-context';
 
 interface NavItemConfig {
   href: string;
@@ -43,6 +44,7 @@ export function Header() {
   const { user, userData, isLoading, signOut, isUserDataLoading } = useAuth();
   const isAuthenticated = !!user;
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+  const { isSidebarOpen, setIsSidebarOpen, isSidebarAvailable } = useSidebar();
 
   const handleLogout = async () => {
     try {
@@ -81,12 +83,17 @@ export function Header() {
     <header className="border-border/60 bg-background/90 sticky top-0 z-50 w-full border-b backdrop-blur-lg">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-2">
-          {/* TODO: Implement actual sidebar toggle for authenticated app sections if needed */}
-          {/* {isAuthenticated && (
-            <Button variant="ghost" size="icon" className="lg:hidden">
-              <Menu className="h-5 w-5" /> <span className="sr-only">Toggle App Sidebar</span>
+          {isAuthenticated && isSidebarAvailable && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              className="lg:mr-2"
+            >
+              <Menu className="h-5 w-5" />
+              <span className="sr-only">Toggle Sidebar</span>
             </Button>
-          )} */}
+          )}
           <Link
             href="/"
             className="flex items-center space-x-2"

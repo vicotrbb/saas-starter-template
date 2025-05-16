@@ -7,6 +7,9 @@ import { AuthProvider } from '@/components/providers/auth-provider';
 import { Toaster } from 'sonner';
 import { ThemeProvider } from '@/components/providers/theme-provider';
 import { Header } from '@/components/layout/header';
+import { SidebarProvider } from '@/contexts/sidebar-context';
+import { Sidebar } from '@/components/layout/sidebar';
+import { MainContentWrapper } from '@/components/layout/main-content-wrapper';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -44,14 +47,21 @@ export default function RootLayout({
         <link rel="manifest" href="/site.webmanifest" type="application/manifest+json" />
         <meta name="theme-color" content="#ffffff" />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} flex min-h-screen flex-col antialiased`}
+      >
         <ReactQueryProvider>
           <ThemeProvider>
             <AuthProvider>
-              <Analytics />
-              <Header />
-              {children}
-              <Toaster />
+              <SidebarProvider allowedPaths={['/dashboard', '/admin']}>
+                <Analytics />
+                <Header />
+                <div className="flex flex-1">
+                  <Sidebar />
+                  <MainContentWrapper>{children}</MainContentWrapper>
+                </div>
+                <Toaster />
+              </SidebarProvider>
             </AuthProvider>
           </ThemeProvider>
         </ReactQueryProvider>

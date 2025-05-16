@@ -30,10 +30,9 @@ export const getStripeClientSideClient = () => {
  * and fall back to STRIPE_SECRET_KEY in development environments.
  */
 export const stripe = (
-  !process.env.STRIPE_SECRET_KEY && !process.env.STRIPE_SECRET_KEY_LIVE
+  !!process.env.STRIPE_SECRET_KEY && !!process.env.STRIPE_SECRET_KEY_LIVE
     ? new Stripe(process.env.STRIPE_SECRET_KEY_LIVE ?? process.env.STRIPE_SECRET_KEY ?? '', {
-        // https://github.com/stripe/stripe-node#configuration
-        apiVersion: '2025-04-30.basil', // Use a specific API version for stability
+        apiVersion: '2025-04-30.basil',
         // Register this as an official Stripe plugin.
         // https://stripe.com/docs/building-plugins#setappinfo
         appInfo: {
