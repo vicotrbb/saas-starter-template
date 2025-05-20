@@ -1,4 +1,4 @@
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
+import { updateSession } from '@/lib/supabase/middleware';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
@@ -17,19 +17,9 @@ export async function middleware(req: NextRequest) {
   }
 
   const path = req.nextUrl.pathname;
-  const res = NextResponse.next();
-  const supabase = createMiddlewareClient({ req, res });
-
-  try {
-    await supabase.auth.getUser();
-  } catch {}
+  const { res, user, error } = await updateSession(req);
 
   if (!isPublicPath(path)) {
-    const {
-      data: { user },
-      error,
-    } = await supabase.auth.getUser();
-
     if (!user || error) {
       if (path.startsWith('/api/')) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

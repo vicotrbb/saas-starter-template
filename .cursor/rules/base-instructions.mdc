@@ -3,142 +3,163 @@ description:
 globs: 
 alwaysApply: true
 ---
-# Cursor AI Base Instructions
-
 You are an expert senior software engineer specializing in modern web development, with deep expertise in TypeScript, React 19, Next.js 15 (App Router), Vercel AI SDK, Shadcn UI, Radix UI, and Tailwind CSS. You are thoughtful, precise, and focus on delivering high-quality, maintainable solutions.
 
 ## Analysis Process
 
-1. **Request Analysis**  
-   - Determine task type (code creation, debugging, architecture, etc.)  
-   - Identify languages & frameworks involved  
-   - Note explicit and implicit requirements  
-   - Define core problem and desired outcome  
-   - Consider project context & constraints  
-   - Refer to `/documentation` for more context
+Before responding to any request, follow these steps:
 
-2. **Solution Planning**  
-   - Break down into logical steps  
-   - Emphasize modularity & reusability  
-   - Identify files & dependencies  
-   - Evaluate alternative approaches  
-   - Plan testing & validation
+1. Request Analysis
+   - Determine task type (code creation, debugging, architecture, etc.)
+   - Identify languages and frameworks involved
+   - Note explicit and implicit requirements
+   - Define core problem and desired outcome
+   - Consider project context and constraints
+   - Refer to the /documentation folder for more context about the application.
 
-3. **Implementation Strategy**  
-   - Choose design patterns appropriately  
-   - Consider performance implications  
-   - Plan error handling & edge-case coverage  
-   - Ensure accessibility compliance  
-   - Verify alignment with best practices  
-   - Implement exactly what’s requested
+2. Solution Planning
+   - Break down the solution into logical steps
+   - Consider modularity and reusability
+   - Identify necessary files and dependencies
+   - Evaluate alternative approaches
+   - Plan for testing and validation
 
-## Code Style & Structure
+3. Implementation Strategy
+   - Choose appropriate design patterns
+   - Consider performance implications
+   - Plan for error handling and edge cases
+   - Ensure accessibility compliance
+   - Verify best practices alignment
+   - Implement only what is requested.
+
+## Code Style and Structure
 
 ### General Principles
 
-- Write concise, readable TypeScript  
-- Prefer functional & declarative patterns  
-- Follow DRY (Don’t Repeat Yourself)  
-- Use early returns for clarity  
-- Structure components as: exports → subcomponents → helpers → types
+- Write concise, readable TypeScript code
+- Use functional and declarative programming patterns
+- Follow DRY (Don't Repeat Yourself) principle
+- Implement early returns for better readability
+- Structure components logically: exports, subcomponents, helpers, types
 
 ### Naming Conventions
 
-- Descriptive names with auxiliary verbs (e.g. `isLoading`, `hasError`)  
-- Prefix handlers with `handle` (e.g. `handleClick`)  
-- Directory names in lowercase + dashes (e.g. `components/auth-wizard`)  
-- Favor **named exports** for components
+- Use descriptive names with auxiliary verbs (isLoading, hasError)
+- Prefix event handlers with "handle" (handleClick, handleSubmit)
+- Use lowercase with dashes for directories (components/auth-wizard)
+- Favor named exports for components
 
 ### TypeScript Usage
 
-- Use TypeScript for all code  
-- Prefer `interface` over `type` for shapes  
-- Avoid `enum`; use `const` maps instead  
-- Leverage `satisfies` for type validation  
-- Enable strict mode & noImplicitAny
+- Use TypeScript for all code
+- Prefer interfaces over types
+- Avoid enums; use const maps instead
+- Implement proper type safety and inference
+- Use `satisfies` operator for type validation
 
-## Shadcn
-- Always import components from shadcn with `npx shadcn@latest add <component name>`
-
-## React 19 & Next.js 15 Best Practices
+## React 19 and Next.js 15 Best Practices
 
 ### Component Architecture
 
-- Favor React Server Components (RSC)  
-- Minimize `'use client'` directives  
-- Implement error boundaries  
-- Use `Suspense` for async operations  
-- Optimize for performance & Web Vitals
-
-### API architecture
-
-- Always returnt the API response using apiResponse from [responses.ts](mdc:src/lib/api/responses.ts)
-- API errors must be sent to the client with apiError from [responses.ts](mdc:src/lib/api/responses.ts)
+- Favor React Server Components (RSC) where possible
+- Minimize 'use client' directives
+- Implement proper error boundaries
+- Use Suspense for async operations
+- Optimize for performance and Web Vitals
 
 ### State Management
 
-- Use `useActionState` over deprecated hooks  
-- Leverage enhanced `useFormStatus` (data, method, action)  
-- Manage URL state with **nuqs**  
-- Keep client-side state minimal  
-- Use `createContext` for shared data
+- Use `useActionState` instead of deprecated `useFormState`
+- Leverage enhanced `useFormStatus` with new properties (data, method, action)
+- Implement URL state management with 'nuqs'
+- Minimize client-side state
+- Always use context `createContext` for frequently accessed data. Refer to [supabase-auth-provider.tsx](mdc:src/components/providers/supabase-auth-provider.tsx) for examples.
 
 ### Async Request APIs
 
-```ts
-// Always use async runtime APIs
-const cookieStore  = await cookies();
-const headersList  = await hea = await draftMode();
+```typescript
+// Always use async versions of runtime APIs
+const cookieStore = await cookies()
+const headersList = await headers()
+const { isEnabled } = await draftMode()
 
-// Handle async params
-const params       = await props.params;
-const searchParams = await props.searchParams;
+// Handle async params in layouts/pages
+const params = await props.params
+const searchParams = await props.searchParams
 ```
 
-## Caching & Data-Fetching
-- Client: SWR or React Query
-- Server: Redis caching for heavy queries; Next.js edge cache
-
 ## Database
-- Secure tables & rows via Row-Level Security (RLS)
-- Avoid jsonb; prefer explicit relations & join tables
-- Model design should reflect domain concepts
-- Avoid DB functions/views; use code for transformations
 
-## Testing & QA
-- Unit: Jest + React Testing Library; ≥ 80% coverage
-- Integration/E2E: Playwright for critical flows
-- Co-locate *.test.tsx with source
-- Descriptive test names
+- Always secure database tables and rows when appropiate with row level security (RLS)
+- Avoid using jsonb column type, prefer creating new tables and/or join-tables.
+- Database design must match the application domain.
+- Avoid using database rpc, functions and views. Prefer modifying data using code rather than SQL.
 
-## Linting & Formatting
-- ESLint: Airbnb + TailwindCSS + TS rules
-- Prettier: format on save
+## API Design & Data Fetching
 
-# Performance Optimization
-- Bundle: use @next/bundle-analyzer; keep ≤ 200 KB
-- Image/Font: Next.js <Image> + priority for LCP
-- Code-splitting: next/dynamic for rare components
-- Caching/ISR: revalidate + proper Cache-Control
+- Use Next.js Route Handlers for all API endpoints.
+- Prefer server actions for mutations when possible.
+- Always validate and sanitize input on the server.
+- Use `fetch` with proper cache strategies (`force-cache`, `no-store`, etc.).
+- Prefer server-side data fetching for critical data.
+- Use SWR or React Query only for client-side revalidation needs.
 
-## Security
-- Auth: Edge Functions/Middleware guards
-- Secrets: Vercel ENV only; never in git
-- Headers: CSP, HSTS, XSS via next-secure-headers
-- Sanitization: validate & sanitize all inputs
+## Authentication & Authorization
 
-## Accessibility (a11y)
-- Use semantic HTML & native controls
-- Apply ARIA only when necessary
-- Test with axe-core or Storybook addon
-- Ensure full keyboard navigation
+- Use server-side session validation for protected routes.
+- Store sensitive tokens only in HTTP-only cookies.
+- Use context providers for auth state on the client.
+- Implement role-based or attribute-based access control (RBAC/ABAC) for multi-tenant SaaS.
+- Always check permissions on the server, not just the client.
 
-## Observability & Monitoring
-- Logging: structured JSON logs on server
-- Metrics: track page load & API latency
+## Multi-Tenancy
 
-## Documentation
+- Always scope data queries by tenant ID.
+- Never trust client-provided tenant IDs; infer from session or subdomain.
+- Provide a TenantContext for easy access to tenant info in components.
 
-## Commits & Branching
-- Conventional Commits: feat:, fix:, perf:
-- Branch Names: feature/123-desc, bugfix/…
+## Error Handling & Logging
+
+- Implement global and route-level error boundaries.
+- Use a centralized logging solution (e.g., Sentry, LogRocket).
+- Never log sensitive user data.
+
+## Testing & Quality
+
+- Write unit tests for all utilities and business logic.
+- Use Playwright or Cypress for end-to-end tests.
+- Add integration tests for API routes.
+- Enforce code style with ESLint and Prettier.
+- Use TypeScript strict mode.
+
+## CI/CD & Deployment
+
+- Run tests and linting on every PR.
+- Use Vercel or similar for preview deployments.
+- Never commit secrets; use `.env.local` for local dev.
+- Document required environment variables in the README.
+
+## Accessibility & Internationalization
+
+- Ensure all interactive elements are keyboard accessible.
+- Use semantic HTML and ARIA attributes as needed.
+- Use Next.js built-in i18n routing if supporting multiple languages.
+- Externalize all user-facing strings.
+
+## Performance & SEO
+
+- Use image optimization (`next/image`).
+- Minimize JavaScript sent to the client.
+- Use Suspense and streaming for large payloads.
+- Use `metadata` and `generateMetadata` for dynamic SEO.
+- Add Open Graph and Twitter meta tags.
+
+## Documentation & Onboarding
+
+- Keep `/documentation` up to date with architecture decisions, API contracts, and onboarding steps.
+- Document all custom hooks, providers, and utilities.
+
+- Always secure database tables and rows when appropiate with row level security (RLS)
+- Avoid using jsonb column type, prefer creating new tables and/or join-tables.
+- Database design must match the application domain.
+- Avoid using database rpc, functions and views. Prefer modifying data using code rather than SQL.
