@@ -133,7 +133,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = useCallback(async () => {
     const { error } = await supabase.auth.signOut();
-    if (error) throw error;
+
+    if (error) {
+      throw error;
+    }
+
+    window.location.href = '/';
   }, [supabase.auth]);
 
   const resetPassword = useCallback(

@@ -22,7 +22,7 @@ export default function SystemAdminGuard({ children }: { children: ReactNode }) 
     return <div className="bg-muted h-20 animate-pulse rounded-md"></div>;
   }
 
-  if (!user && !isUserDataLoading && userRole !== 'system-admin') {
+  if (!user || (user && !isUserDataLoading && userRole !== 'system-admin')) {
     return (
       <div className="flex min-h-screen items-center justify-center p-4">
         <Card className="w-full max-w-md">

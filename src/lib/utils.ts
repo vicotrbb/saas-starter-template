@@ -94,3 +94,12 @@ export function estimateTokenCount(text: string): number {
   // Rough estimation: 1 token ≈ 4 characters in English
   return Math.ceil(text.length / 4);
 }
+
+export function getInitials(name: string): string {
+  return name
+    .split(' ')
+    .map((word) => word[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2);
+}

@@ -8,9 +8,10 @@ export interface UserContext {
   lastName: string;
   email: string;
   phoneNumber: string;
-  role: string;
+  role: UserRole;
   organizationId: string;
   organizationName: string;
+  avatar_url?: string;
 }
 
 export interface OrganizationContext {

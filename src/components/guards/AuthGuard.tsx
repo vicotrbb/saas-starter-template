@@ -9,7 +9,7 @@ export default function AuthGuard({ children }: { children: ReactNode }) {
     return <div className="bg-muted h-20 animate-pulse rounded-md"></div>;
   }
 
-  if (!user && !isUserDataLoading) {
+  if (!user) {
     return <UnauthorizedAccess />;
   }
 

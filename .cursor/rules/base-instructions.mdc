@@ -41,6 +41,7 @@ Before responding to any request, follow these steps:
 - Follow DRY (Don't Repeat Yourself) principle
 - Implement early returns for better readability
 - Structure components logically: exports, subcomponents, helpers, types
+- Always use APIs to request/modify data from/on the database, do not query supabase directly.
 
 ### Naming Conventions
 
@@ -73,7 +74,7 @@ Before responding to any request, follow these steps:
 - Leverage enhanced `useFormStatus` with new properties (data, method, action)
 - Implement URL state management with 'nuqs'
 - Minimize client-side state
-- Always use context `createContext` for frequently accessed data. Refer to [supabase-auth-provider.tsx](mdc:src/components/providers/supabase-auth-provider.tsx) for examples.
+- Always use context `createContext` for frequently accessed data. Refer to [auth-provider.tsx](mdc:src/components/providers/auth-provider.tsx) for examples.
 
 ### Async Request APIs
 

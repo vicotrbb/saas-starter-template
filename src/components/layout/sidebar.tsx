@@ -9,8 +9,6 @@ import { cn } from '@/lib/utils';
 import { ChevronDownIcon, X } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
-const SIDEBAR_WIDTH = 'w-72'; // approx 18rem
-
 export function Sidebar() {
   const { isSidebarOpen, setIsSidebarOpen, sidebarNavItems, isSidebarAvailable, activePath } =
     useSidebar();
@@ -104,8 +102,7 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        SIDEBAR_WIDTH,
-        'bg-background fixed top-16 left-0 z-40 h-[calc(100vh-4rem)] border-r',
+        'bg-background fixed top-16 left-0 z-40 h-[calc(100vh-4rem)] w-72 border-r',
         'flex flex-col transition-transform duration-300 ease-in-out',
         isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
       )}

@@ -14,14 +14,8 @@ export const SidebarNavSetter: React.FC<SidebarNavSetterProps> = ({ navItems }) 
     if (isSidebarAvailable) {
       setSidebarNavItems(navItems);
     }
-    // Clear nav items when component unmounts or if sidebar becomes unavailable,
-    // or if navItems prop changes for this specific section.
-    return () => {
-      // Potentially clear them only if this instance was the one that set them,
-      // or rely on the context to clear them if path changes out of allowed scope.
-      // For now, let's assume another NavSetter or context handles clearing on path change.
-    };
+    return () => {};
   }, [navItems, setSidebarNavItems, isSidebarAvailable]);
 
-  return null; // This component does not render anything
+  return null;
 };

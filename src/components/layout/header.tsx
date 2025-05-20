@@ -11,8 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, LogOut, User as UserIcon, Settings, X } from 'lucide-react';
+import { Menu, LogOut, User as UserIcon, Settings } from 'lucide-react';
 import { useAuth } from '../providers/auth-provider';
 import { Skeleton } from '@/components/ui/skeleton';
 import React from 'react';
@@ -36,14 +35,13 @@ const authNavLinks = {
 };
 
 const userMenuItems: NavItemConfig[] = [
-  { label: 'Profile', href: '/profile', icon: UserIcon },
-  { label: 'Account Settings', href: '/settings', icon: Settings },
+  { label: 'Profile', href: '/dashboard/profile', icon: UserIcon },
+  { label: 'Account Settings', href: '/dashboard/settings', icon: Settings },
 ];
 
 export function Header() {
   const { user, userData, isLoading, signOut, isUserDataLoading } = useAuth();
   const isAuthenticated = !!user;
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const { isSidebarOpen, setIsSidebarOpen, isSidebarAvailable } = useSidebar();
 
   const handleLogout = async () => {
@@ -59,23 +57,17 @@ export function Header() {
   const avatarFallback = (displayName?.[0] ?? 'U').toUpperCase();
   const avatarUrl = user?.user_metadata?.avatar_url ?? undefined;
 
-  const renderNavLinks = (isMobile = false) =>
+  const renderNavLinks = () =>
     mainNavItems
       .filter((item) => !item.authRequired || isAuthenticated)
       .map((item) => (
         <Button
           key={item.href}
-          variant={isMobile ? 'ghost' : 'link'}
+          variant="link"
           asChild
-          className={
-            isMobile
-              ? 'w-full justify-start text-base'
-              : 'text-muted-foreground hover:text-foreground px-3'
-          }
+          className="text-muted-foreground hover:text-foreground px-3"
         >
-          <Link href={item.href} onClick={() => isMobile && setIsMobileMenuOpen(false)}>
-            {item.label}
-          </Link>
+          <Link href={item.href}>{item.label}</Link>
         </Button>
       ));
 
@@ -94,16 +86,12 @@ export function Header() {
               <span className="sr-only">Toggle Sidebar</span>
             </Button>
           )}
-          <Link
-            href="/"
-            className="flex items-center space-x-2"
-            onClick={() => setIsMobileMenuOpen(false)}
-          >
+          <Link href="/" className="flex items-center space-x-2">
             <span className="text-foreground text-xl font-semibold tracking-tight">YourApp</span>
           </Link>
         </div>
 
-        <nav className="hidden items-center space-x-1 lg:flex">{renderNavLinks()}</nav>
+        <nav className="items-center space-x-1 lg:flex">{renderNavLinks()}</nav>
 
         <div className="flex items-center gap-3">
           {(isLoading || (isAuthenticated && isUserDataLoading)) && (
@@ -158,7 +146,7 @@ export function Header() {
           )}
 
           {!isLoading && !isAuthenticated && (
-            <div className="hidden items-center gap-2 lg:flex">
+            <div className="flex items-center gap-2">
               <Button variant="ghost" asChild>
                 <Link href={authNavLinks.login.href}>{authNavLinks.login.label}</Link>
               </Button>
@@ -167,68 +155,6 @@ export function Header() {
               </Button>
             </div>
           )}
-
-          <div className="lg:hidden">
-            <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <Menu className="h-5 w-5" />
-                  <span className="sr-only">Toggle Menu</span>
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="w-full max-w-xs p-0 sm:max-w-sm">
-                <div className="flex h-full flex-col">
-                  <div className="flex h-16 items-center justify-between border-b px-4">
-                    <Link
-                      href="/"
-                      className="flex items-center space-x-2"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      <span className="text-xl font-semibold tracking-tight">YourApp</span>
-                    </Link>
-                    <SheetTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <X className="h-5 w-5" />
-                        <span className="sr-only">Close Menu</span>
-                      </Button>
-                    </SheetTrigger>
-                  </div>
-                  <nav className="flex flex-grow flex-col gap-2 p-4">
-                    {renderNavLinks(true)}
-                    <DropdownMenuSeparator className="my-2" />
-                    {!isAuthenticated ? (
-                      <>
-                        <Button
-                          variant="default"
-                          className="w-full justify-start text-base"
-                          asChild
-                        >
-                          <Link
-                            href={authNavLinks.register.href}
-                            onClick={() => setIsMobileMenuOpen(false)}
-                          >
-                            {authNavLinks.register.label}
-                          </Link>
-                        </Button>
-                        <Button
-                          variant="outline"
-                          className="w-full justify-start text-base"
-                          asChild
-                        >
-                          <Link
-                            href={authNavLinks.login.href}
-                            onClick={() => setIsMobileMenuOpen(false)}
-                          >
-                            {authNavLinks.login.label}
-                          </Link>
-                        </Button>
-                      </>
-                    ) : null}
-                  </nav>
-                </div>
-              </SheetContent>
-            </Sheet>
-          </div>
         </div>
       </div>
     </header>
