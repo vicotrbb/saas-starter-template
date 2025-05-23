@@ -2,7 +2,7 @@ import { updateSession } from '@/lib/supabase/middleware';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-const publicPaths = ['/'];
+const publicPaths = ['/', '/auth'];
 
 function isPublicPath(path: string) {
   return publicPaths.some((publicPath) => path === publicPath || path.startsWith(`${publicPath}/`));

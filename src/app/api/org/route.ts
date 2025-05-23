@@ -15,15 +15,25 @@ export async function GET() {
       return apiError('UNAUTHORIZED', 'Unauthorized');
     }
 
-    const { data: organization, error: orgError } = await supabase
-      .from('organizations')
-      .select('id, name')
-      .eq('users.id', user.id)
+    const { data: userProfile, error: userError } = await supabase
+      .from('users')
+      .select(
+        `
+        organization_id,
+        organizations (
+          id,
+          name
+        )
+      `
+      )
+      .eq('id', user.id)
       .single();
 
-    if (orgError || !organization) {
+    if (userError || !userProfile || !userProfile.organizations) {
       return apiError('NOT_FOUND', 'Organization not found');
     }
+
+    const organization = userProfile.organizations;
 
     const organizationContext: OrganizationContext = {
       id: organization.id,

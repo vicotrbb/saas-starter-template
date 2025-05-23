@@ -20,6 +20,21 @@ export type Organizations = Array<Organization>;
 export type User = Tables<'users'>;
 export type Users = Array<User>;
 
+// Organization member with computed fields for better API response
+export interface OrganizationMember {
+  id: string;
+  name: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string | null;
+  role: UserRole;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type OrganizationMembers = Array<OrganizationMember>;
+
 export type UserRole = Enums<'user_role'>;
 export type SubscriptionStatus = Enums<'subscription_status'>;
 export type PaymentStatus = Enums<'payment_status'>;

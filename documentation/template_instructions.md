@@ -59,8 +59,8 @@ Follow these guidelines when extending the template:
 - Place reusable UI components in `src/components/`
 - Follow the component structure:
 
-  ```
-  components/
+    ```text
+    components/
     ├── ui/ (Shadcn/UI components)
     ├── forms/ (Form components)
     ├── layout/ (Layout components)
@@ -68,13 +68,13 @@ Follow these guidelines when extending the template:
     ├── providers/ (Providers components)
     ├── seo/ (SEO related components)
     └── [feature]/ (Feature-specific components)
-  ```
+    ```
 
 - Add new Shadcn/UI components:
 
-  ```bash
-  npx shadcn-ui@latest add [component-name]
-  ```
+    ```bash
+    npx shadcn-ui@latest add [component-name]
+    ```
 
 ### Data Management
 
@@ -141,22 +141,22 @@ Follow these guidelines when extending the template:
 
 1. Create a new directory in the appropriate route group:
 
-   ```
-   src/app/dashboard/your-feature/
-   ```
+    ```text
+    src/app/dashboard/your-feature/
+    ```
 
 2. Add `page.tsx` for the main content:
 
-   ```tsx
-   export default function YourFeaturePage() {
-     return (
-       <div>
-         <h1>Your Feature</h1>
-         {/* Your content */}
-       </div>
-     );
-   }
-   ```
+    ```tsx
+    export default function YourFeaturePage() {
+        return (
+        <div>
+            <h1>Your Feature</h1>
+            {/* Your content */}
+        </div>
+        );
+    }
+    ```
 
 3. Optionally add `layout.tsx` for page-specific layouts
 
