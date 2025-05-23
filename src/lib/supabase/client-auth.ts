@@ -1,8 +1,9 @@
 import { Database } from '@/types/database.types';
 import { createBrowserClient } from '@supabase/ssr';
+import { SupabaseClient } from '@supabase/supabase-js';
 
 // Client-side Supabase client
-export const createSupabaseClient = () => {
+export const createSupabaseClient = (): SupabaseClient<Database> => {
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
     throw new Error('Missing env.NEXT_PUBLIC_SUPABASE_URL');
   }

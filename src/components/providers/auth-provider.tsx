@@ -24,7 +24,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient();
   const supabase = createSupabaseClient();
 
-  // Adds user data to the context
   const {
     data: { userData, organizationData } = {
       userData: null,
@@ -209,7 +208,7 @@ export function useAuth() {
   const context = useContext(AuthContext);
 
   if (context === undefined) {
-    throw new Error('useAuth must be used within a SupabaseAuthProvider');
+    throw new Error('useAuth must be used within an AuthProvider');
   }
 
   return context;

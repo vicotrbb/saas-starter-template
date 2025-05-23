@@ -8,7 +8,15 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit --skipLibCheck"
+    "typecheck": "tsc --noEmit --skipLibCheck",
+    "deploy:preview": "vercel",
+    "deploy:prod": "vercel --prod",
+    "supabase:link": "supabase link",
+    "supabase:types": "supabase gen types typescript --project-id $SUPABASE_PROJECT_ID --schema public > src/types/database.types.ts",
+    "db:push": "supabase db push",
+    "db:reset": "supabase db reset",
+    "setup:vercel": "vercel login",
+    "setup:supabase": "supabase login"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",

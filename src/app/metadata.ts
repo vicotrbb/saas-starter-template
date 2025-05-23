@@ -35,7 +35,7 @@ export const defaultMetadata = {
  */
 export const siteConfig = {
   name: 'saas-starter-template',
-  url: process.env.NEXT_PUBLIC_APP_URL ?? '',
+  url: process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000',
   ogImage: '',
   ogLogo: '',
   description: '',
@@ -68,7 +68,15 @@ export function generateMetadata({
   noIndex = false,
   path = '/',
 }) {
-  const metadataBase = new URL(siteConfig.url);
+  const baseUrl = siteConfig.url || 'http://localhost:3000';
+  let metadataBase;
+
+  try {
+    metadataBase = new URL(baseUrl);
+  } catch {
+    metadataBase = new URL('http://localhost:3000');
+  }
+
   const imageUrl = image.startsWith('https') ? image : absoluteUrl(image);
 
   return {
